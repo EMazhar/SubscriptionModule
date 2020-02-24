@@ -77,7 +77,9 @@ public class DtoToEntityMapper {
         payment.setPaymentMode(entityManager.getReference(PaymentMode.class, paymentDto.getPaymentMode()));
         payment.setPaymentStatus(entityManager.getReference(PaymentStatus.class
                 , 1L));
-        payment.setPaymentTime(Timestamp.valueOf(paymentDto.getPaymentTime()));
+        if(paymentDto.getPaymentTime()!=null) {
+        	payment.setPaymentTime(Timestamp.valueOf(paymentDto.getPaymentTime()));
+        }
         payment.setThirdPartyProvider(entityManager.getReference(ThirdPartyProvider.class, paymentDto
                 .getThirdPartyProvider()));
         payment.setTransactionComment(paymentDto.getTransactionComment());

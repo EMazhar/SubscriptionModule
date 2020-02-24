@@ -47,6 +47,7 @@ public class AllSubscription extends BaseEntity implements Serializable {
 
     @Column(name = "start_date")
     private Timestamp startDate;
+    
     private Timestamp endDate;
 
     @ManyToOne()
@@ -63,6 +64,7 @@ public class AllSubscription extends BaseEntity implements Serializable {
 
     @OneToOne(mappedBy = "allSubscription")
     private SubscriptionCost subscriptionCost;
+    
     @OneToOne(mappedBy = "allSubscription")
     private SubscriptionPayment subscriptionPayment;
 

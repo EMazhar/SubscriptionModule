@@ -16,10 +16,18 @@ import java.sql.Timestamp;
 
 @Repository
 public interface SubscriptionActualRepository extends JpaRepository<SubscriptionActual, Long> {
-    SubscriptionActual findOneBysubscriptionMealAndDateAndActualStatusId(SubscriptionMeal subscriptionMeal, Timestamp
+    
+	SubscriptionActual findOneBysubscriptionMealAndDateAndActualStatusId(SubscriptionMeal subscriptionMeal, Timestamp
             date, Long actualStatusId);
 
     @Modifying
     @Query("Update SubscriptionActual sa SET sa.actualStatusId=:statusId WHERE sa.actualStatusId=1L and sa.date > :today and sa.chefId=:chefId")
     void cancelSubscriptionActual(@Param("statusId") Long statusId, @Param("chefId") Long chefId,@Param("today") Timestamp today);
+    
+    /**
+     * 
+     * @param chefId
+     * @return
+     */
+    SubscriptionActual findByChefId(long chefId);
 }
