@@ -25,7 +25,6 @@ import com.jp.submo.repository.entity.SubscriptionMeal;
 import com.jp.submo.repository.entity.SubscriptionPayment;
 import com.jp.submo.repository.entity.SubscriptionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,12 +73,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public JpResponseModel createSubscription(SubscriptionDto subscriptionDto) {
+    public JpResponseModel createSubscription(SubscriptionDto subscriptionDto, String createdBy) {
 
-        AllSubscription subscription = getSubscription(subscriptionDto, entityManager);
-        SubscriptionCost cost = getSubscriptionCost(subscriptionDto, subscription);
-        SubscriptionPayment payment = getSubscriptionPayment(subscriptionDto, subscription, entityManager);
-        Collection<SubscriptionMeal> meals = getSubscriptionMeals(subscriptionDto, subscription, entityManager);
+        AllSubscription subscription = getSubscription(subscriptionDto, entityManager, createdBy);
+        SubscriptionCost cost = getSubscriptionCost(subscriptionDto, subscription, createdBy);
+        SubscriptionPayment payment = getSubscriptionPayment(subscriptionDto, subscription, entityManager, createdBy);
+        Collection<SubscriptionMeal> meals = getSubscriptionMeals(subscriptionDto, subscription, entityManager,
+                createdBy);
 
         allSubscriptionRepository.save(subscription);
         subscriptionCostRepository.save(cost);
@@ -90,7 +90,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public JpResponseModel confirmSubscription(ConfirmSubscriptionDto confirmSubscriptionDto) {
+    public JpResponseModel confirmSubscription(ConfirmSubscriptionDto confirmSubscriptionDto, String modifiedBy) {
 
         Optional<AllSubscription> subscription = allSubscriptionRepository.findById(confirmSubscriptionDto
                 .getSubscriptionId());
@@ -107,13 +107,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         Timestamp modifiedDate = Timestamp.valueOf(LocalDateTime.now());
         subscriptionEntity.setSubscriptionStatus(entityManager.getReference(SubscriptionStatus.class, 2L));
-        subscriptionEntity.setModifiedBy(confirmSubscriptionDto.getModifiedBy());
+        subscriptionEntity.setModifiedBy(modifiedBy);
         subscriptionEntity.setLastModifiedDateTime(modifiedDate);
 
         SubscriptionPayment payment = subscriptionEntity.getSubscriptionPayment();
         payment.setPaymentStatus(entityManager.getReference(PaymentStatus.class, 2L));
-        payment.setModifiedBy(confirmSubscriptionDto.getModifiedBy());
+        payment.setModifiedBy(modifiedBy);
         payment.setLastModifiedDateTime(modifiedDate);
+        payment.setTransRefKey(confirmSubscriptionDto.getTransRefKey());
+        payment.setTransactionComment(confirmSubscriptionDto.getTransactionComment());
 
         allSubscriptionRepository.save(subscriptionEntity);
         subscriptionPaymentRepository.saveAndFlush(payment);
@@ -125,7 +127,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public JpResponseModel assignChefToSubscription(AssignChefToSubscriptionDto assignChefToSubscriptionDto) {
+    public JpResponseModel assignChefToSubscription(AssignChefToSubscriptionDto assignChefToSubscriptionDto, String
+            createdBy) {
 
         Optional<AllSubscription> subscription = allSubscriptionRepository.findById(assignChefToSubscriptionDto
                 .getSubscriptionId());
@@ -135,28 +138,34 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
         AllSubscription allSubscription = subscription.get();
 
-        assignChefToSubscription(assignChefToSubscriptionDto.getCreatedBy(), assignChefToSubscriptionDto.getChefId(),
+        assignChefToSubscription(createdBy, assignChefToSubscriptionDto.getChefId(),
                 allSubscription.getStartDate().toLocalDateTime(), allSubscription);
 
+        allSubscription.setSubscriptionStatus(entityManager.getReference(SubscriptionStatus.class,3L));
+        allSubscriptionRepository.saveAndFlush(allSubscription);
+
         return success();
 
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public JpResponseModel startCooking(CookingDto cookingDto) {
-        SubscriptionActual subscriptionActual = subscriptionActualRepository
-                .findOneBysubscriptionMealAndDateAndActualStatusId
-                        (entityManager.getReference(SubscriptionMeal.class, cookingDto.getMealId()), Timestamp.valueOf
-                                (cookingDto.getDate().atStartOfDay()), 1L);
+    public JpResponseModel startCooking(CookingDto cookingDto, String modifiedBy) {
+        Optional<SubscriptionActual> subscriptionActualOptional = subscriptionActualRepository.findById(cookingDto
+                .getSubscriptionActualId());
 
-        if (null == subscriptionActual) {
-            throwError("No actual subscription found!");
+        if (!subscriptionActualOptional.isPresent()) {
+            throwError("No Subscription actual found!");
         }
+
+        SubscriptionActual subscriptionActual = subscriptionActualOptional.get();
+
+
+
 
         subscriptionActual.setActualStatusId(2L);
-        subscriptionActual.setStartDate(Timestamp.valueOf(LocalDateTime.now()));
-        subscriptionActual.setModifiedBy(cookingDto.getModifiedBy());
+        subscriptionActual.setStartTime(Timestamp.valueOf(LocalDateTime.now()));
+        subscriptionActual.setModifiedBy(modifiedBy);
         subscriptionActual.setLastModifiedDateTime(Timestamp.valueOf(LocalDateTime.now()));
 
         subscriptionActualRepository.saveAndFlush(subscriptionActual);
@@ -166,19 +175,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public JpResponseModel endCooking(CookingDto cookingDto) {
-        SubscriptionActual subscriptionActual = subscriptionActualRepository
-                .findOneBysubscriptionMealAndDateAndActualStatusId
-                        (entityManager.getReference(SubscriptionMeal.class, cookingDto.getMealId()), Timestamp.valueOf
-                                (cookingDto.getDate().atStartOfDay()), 2L);
+    public JpResponseModel endCooking(CookingDto cookingDto, String modifiedBy) {
+        Optional<SubscriptionActual> subscriptionActualOptional = subscriptionActualRepository.findById(cookingDto
+                .getSubscriptionActualId());
 
-        if (null == subscriptionActual) {
-            throwError("No actual subscription found!");
+        if (!subscriptionActualOptional.isPresent()) {
+            throwError("No Subscription actual found!");
         }
 
+        SubscriptionActual subscriptionActual = subscriptionActualOptional.get();
+
         subscriptionActual.setActualStatusId(3L);
-        subscriptionActual.setEndDate(Timestamp.valueOf(LocalDateTime.now()));
-        subscriptionActual.setModifiedBy(cookingDto.getModifiedBy());
+        subscriptionActual.setEndTime(Timestamp.valueOf(LocalDateTime.now()));
+        subscriptionActual.setModifiedBy(modifiedBy);
         subscriptionActual.setLastModifiedDateTime(Timestamp.valueOf(LocalDateTime.now()));
 
         subscriptionActualRepository.saveAndFlush(subscriptionActual);
@@ -188,7 +197,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public JpResponseModel endSubscription(EndSubscriptionDto endSubscriptionDto) {
+    public JpResponseModel endSubscription(EndSubscriptionDto endSubscriptionDto, String createdBy, String modifiedBy) {
         Optional<AllSubscription> subscription = allSubscriptionRepository.findById(endSubscriptionDto
                 .getSubscriptionId());
 
@@ -197,11 +206,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
         AllSubscription allSubscription = subscription.get();
 
-        endSubscriptionsForAllChefs(endSubscriptionDto.getEndType(), endSubscriptionDto.getCreatedBy(),
+        endSubscriptionsForAllChefs(endSubscriptionDto.getActualStatusId(), createdBy,
                 allSubscription);
 
-        allSubscription.setSubscriptionStatus(entityManager.getReference(SubscriptionStatus.class, 4L));
-        allSubscription.setModifiedBy(endSubscriptionDto.getModifiedBy());
+        allSubscription.setSubscriptionStatus(entityManager.getReference(SubscriptionStatus.class, endSubscriptionDto
+                .getActualStatusId()));
+        allSubscription.setModifiedBy(modifiedBy);
         allSubscription.setLastModifiedDateTime(Timestamp.valueOf(LocalDateTime.now()));
 
         allSubscriptionRepository.saveAndFlush(allSubscription);
@@ -214,7 +224,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public JpResponseModel reassignChefToSubscription(ReassignChefToSubscriptionDto reassignChefToSubscriptionDto) {
+    public JpResponseModel reassignChefToSubscription(ReassignChefToSubscriptionDto reassignChefToSubscriptionDto,
+                                                      String createdBy) {
         Optional<AllSubscription> subscription = allSubscriptionRepository.findById(reassignChefToSubscriptionDto
                 .getSubscriptionId());
 
@@ -223,13 +234,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
         AllSubscription allSubscription = subscription.get();
 
-        endSubscriptionsForAllChefs(reassignChefToSubscriptionDto.getEndType(), reassignChefToSubscriptionDto
-                .getCreatedBy(), allSubscription);
+        endSubscriptionsForAllChefs(reassignChefToSubscriptionDto.getActualStatusId(), createdBy, allSubscription);
 
 
-        LocalDateTime startDate = LocalDate.now().atStartOfDay();
+        LocalDateTime startDate = LocalDate.now().atStartOfDay().plusDays(1);
 
-        assignChefToSubscription(reassignChefToSubscriptionDto.getCreatedBy(), reassignChefToSubscriptionDto
+        assignChefToSubscription(createdBy, reassignChefToSubscriptionDto
                 .getChefId(), startDate, allSubscription);
 
         return success();
@@ -243,31 +253,32 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         LocalDateTime endDate = allSubscription.getEndDate().toLocalDateTime();
 
-        List<SubscriptionActual> subscrptionActualList = new ArrayList<>();
+        List<SubscriptionActual> subscriptionActualList = new ArrayList<>();
         for (LocalDateTime date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
             final Timestamp dateTime = Timestamp.valueOf(date);
             allSubscription.getSubscriptionMeals().forEach(subscriptionMeal -> {
-                subscrptionActualList.add(getSubscriptionActual(createdBy,
+                subscriptionActualList.add(getSubscriptionActual(createdBy,
                         chefId, dateTime,
-                        subscriptionMeal));
+                        allSubscription,
+                        subscriptionMeal.getMealType()));
             });
         }
 
-        subscriptionActualRepository.saveAll(subscrptionActualList);
+        subscriptionActualRepository.saveAll(subscriptionActualList);
         subscribedChefRepository.saveAndFlush(subscribedChef);
     }
 
-    private void endSubscriptionsForAllChefs(Long endType, String createdBy, AllSubscription allSubscription) {
+    private void endSubscriptionsForAllChefs(Long actualStatusId, String createdBy, AllSubscription allSubscription) {
         Collection<SubscribedChef> allChefs = allSubscription.getSubscribedChefs();
-        if(allChefs !=null && !allChefs.isEmpty()) {
+        if (allChefs != null && !allChefs.isEmpty()) {
             allChefs.forEach(subscribedChef -> {
-                endSubProcessing(endType, subscribedChef.getChefId(), allSubscription,
+                endSubProcessing(actualStatusId, subscribedChef.getChefId(), allSubscription,
                         createdBy);
             });
         }
     }
 
-    private void endSubProcessing(Long endType, Long chefId, AllSubscription allSubscription, String createdBy) {
+    private void endSubProcessing(Long actualStatusId, Long chefId, AllSubscription allSubscription, String createdBy) {
         ChefSubEarning chefSubEarning = new ChefSubEarning();
 
         chefSubEarning.setAllSubscription(allSubscription);
@@ -283,7 +294,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         chefSubEarningRepository.save(chefSubEarning);
 
-        subscriptionActualRepository.cancelSubscriptionActual(endType, chefId, Timestamp.valueOf(LocalDate.now()
+        subscriptionActualRepository.cancelSubscriptionActual(actualStatusId, chefId, Timestamp.valueOf(LocalDate.now()
                 .atStartOfDay()));
     }
 
