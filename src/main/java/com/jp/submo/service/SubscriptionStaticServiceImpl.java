@@ -1,6 +1,9 @@
 package com.jp.submo.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,9 +13,9 @@ import com.jp.submo.repository.AllSubscriptionRepository;
 import com.jp.submo.repository.SubscriptionActualRepository;
 import com.jp.submo.repository.SubscriptionMenuRepository;
 import com.jp.submo.repository.SubscriptionTariffRepository;
-import com.jp.submo.repository.entity.SubscriptionActual;
 import com.jp.submo.repository.entity.SubscriptionMenu;
 import com.jp.submo.repository.entity.SubscriptionTariff;
+import com.jp.submo.util.SubscriptionUtility;
 
 /**
  * 
@@ -35,30 +38,79 @@ public class SubscriptionStaticServiceImpl implements SubscriptionStaticService 
 	@Autowired
 	private SubscriptionMenuRepository subscriptionMenuRepository;
 	
+
+	
 	@Override
 	public JpResponseModel fetchSubscriptionMenu() {
-		List<SubscriptionMenu> subscriptionMenuList=subscriptionMenuRepository.findAll();
-		return null;
+		try {
+			List<SubscriptionMenu> subscriptionMenuList=subscriptionMenuRepository.findAll();
+			return SubscriptionUtility.success(subscriptionMenuList);
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			return SubscriptionUtility.error();
+		}
 	}
 
 	@Override
 	public JpResponseModel fetchsubscriptionTariff() {
-		List<SubscriptionTariff> subsTariffList = subscriptionTariffRepository.findAll();
-		return null;
+		Map<String,Map<String,List<Double>>> responseMap = new HashMap<>();
+		
+		
+		try {
+			List<SubscriptionTariff> subsTariffList = subscriptionTariffRepository.findAll();
+			
+			List<Double> tariffwkList=new ArrayList<>();
+			List<Double> tariffMonList=new ArrayList<>();
+			Map<String,List<Double>> lookupWkMap = new HashMap<>();
+			Map<String,List<Double>> lookupMonMap = new HashMap<>();
+			
+			for(SubscriptionTariff st: subsTariffList) {
+				List<Double> tariffList=null;
+				Map<String,List<Double>> lookupMap=null;
+				if(st.getDurationType().equalsIgnoreCase("weekly")) {
+					tariffList=new ArrayList<>();
+					lookupMap=lookupWkMap;
+				}else if(st.getDurationType().equalsIgnoreCase("monthly")) {
+					tariffList=new ArrayList<>();
+					lookupMap=lookupMonMap;
+				}
+				tariffList.add(st.getOnePerson());
+				tariffList.add(st.getTwoPerson());
+				tariffList.add(st.getThreePerson());
+				tariffList.add(st.getFourPerson());
+				tariffList.add(st.getFivePerson());
+				lookupMap.put(st.getLookupCode(), tariffList);
+				
+			}
+			responseMap.put("weekly",lookupWkMap);
+			responseMap.put("monthly",lookupMonMap);
+			
+			return SubscriptionUtility.success(responseMap);
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			return SubscriptionUtility.error();
+		}
+		
 	}
 
 	@Override
 	public JpResponseModel fetchSubscriptionByUser(long userId) {
-		allSubscriptionRepository.findAllSubscriptionByUserId(userId);
-		return null;
+		try {
+		return SubscriptionUtility.success(allSubscriptionRepository.findAllSubscriptionByUserId(userId));
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			return SubscriptionUtility.error("Theres is no such user for user id :"+userId);
+		}
 	}
 
 	@Override
 	public JpResponseModel fetchSubscriptionActualByUser(long userId) {
-		// TODO Auto-generated method stub
-		SubscriptionActual subscriptionActual = subscriptionActualRepository.findByChefId(userId);
-		return null;
+		try {
+			return SubscriptionUtility.success(subscriptionActualRepository.findByChefId(userId));
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			return SubscriptionUtility.error("Theres is no such user for user id :"+userId);
+		}
 	}
-
 	
 }

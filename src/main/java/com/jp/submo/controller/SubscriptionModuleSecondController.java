@@ -1,6 +1,7 @@
 package com.jp.submo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,24 +20,29 @@ public class SubscriptionModuleSecondController {
 	@Autowired
 	private SubscriptionStaticService subscriptionStaticService;
 	
-	@GetMapping("/fetchSubscriptionActualByUser")
+	@GetMapping("/subscriptionActualByUser")
     public ResponseEntity<JpResponseModel> fetchSubscriptionActualByUser(@RequestBody() SubscriptionDto subscriptionDto) {
-		return null;
+		return new ResponseEntity<>(subscriptionStaticService.fetchSubscriptionActualByUser(subscriptionDto.getUserId()),HttpStatus.OK);
+		
 	}
 
-	@GetMapping("/fetchsubscription-menu")
-    public ResponseEntity<JpResponseModel> fetchSubscriptionMenu(@RequestBody SubscriptionDto subscriptionDto) {
-		return null;
+	@GetMapping("/subscription-menu")
+    public ResponseEntity<JpResponseModel> fetchSubscriptionMenu() {
+		return new ResponseEntity<>(subscriptionStaticService.fetchSubscriptionMenu(),HttpStatus.OK);
+		
 	}
 	
-	@GetMapping("/fetchsubscriptionTariff")
-    public ResponseEntity<JpResponseModel> fetchSubscriptionTariff(@RequestBody SubscriptionDto subscriptionDto) {
-		return null;
+	@GetMapping("/subscription-tariff")
+    public ResponseEntity<JpResponseModel> fetchSubscriptionTariff() {
+	    return new ResponseEntity<>(subscriptionStaticService.fetchsubscriptionTariff(),HttpStatus.OK);
+		
 	}
 	
-	@GetMapping("/fetchSubscriptionbyuser")
+	@GetMapping("/subscriptionbyuser")
     public ResponseEntity<JpResponseModel> fetchSubscriptionByUser(@RequestBody SubscriptionDto subscriptionDto) {
-		return null;
+		return new ResponseEntity<> (subscriptionStaticService.fetchSubscriptionByUser(subscriptionDto.getUserId()),HttpStatus.OK);
+		
+		
 	}	
 
 	

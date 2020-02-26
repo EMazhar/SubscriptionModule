@@ -34,7 +34,13 @@ public class SubscriptionTariff implements Serializable{
 	private long subscriptionTariffId;
 	
 	@Column(name="tariff_type")
-	private byte tariffType;
+	private String tariffType;
+	
+	@Column(name="duration_type")
+	private String durationType;
+
+	@Column(name="lookup_code")
+	private String lookupCode;
 	
 	@Column(name="one_person")
 	private double onePerson;

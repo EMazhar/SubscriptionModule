@@ -1,10 +1,12 @@
 package com.jp.submo.repository.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -34,8 +36,9 @@ public class SubscriptionMenu implements Serializable {
 	@Column(name="meal_type_id")
 	private int mealTypeId;
 	
+	@OneToMany()
 	@Column(name="dish_id")
-	private AllDishes allDishes;
+	private List<AllDishes> allDishes;
 	
 	@Column(name="softdeleteflag")
 	private byte softdeleteflag;
