@@ -31,5 +31,5 @@ public interface SubscriptionStaticService {
 	 * 
 	 * @return
 	 */
-	JpResponseModel fetchSubscriptionActualByUser(long userId);
+	JpResponseModel fetchSubscriptionActualService(long subscriptionId);
 }

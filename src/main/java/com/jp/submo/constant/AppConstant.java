@@ -18,5 +18,10 @@ public interface AppConstant {
 
     String REQUEST_SUCCESSFUL = "The request was successfully served";
     String INTERNAL_ERROR = "Some internal error or requesting resource is not found";
+    
+    String RAZORPAY_AUTH_TOKEN="gZuiC3pioCNhElzjNzbwRm9X";
+    String RAZORPAY_CREATE_ORDER_URL= "https://api.razorpay.com/v1/orders";
+    String RAZORPAY_ID="rzp_live_cSPFeGBmKBTBan";
+    		
 
 }

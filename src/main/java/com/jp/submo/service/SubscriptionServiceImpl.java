@@ -5,6 +5,7 @@ import com.jp.submo.dto.ConfirmSubscriptionDto;
 import com.jp.submo.dto.CookingDto;
 import com.jp.submo.dto.EndSubscriptionDto;
 import com.jp.submo.dto.JpResponseModel;
+import com.jp.submo.dto.RazorpayRequestDto;
 import com.jp.submo.dto.ReassignChefToSubscriptionDto;
 import com.jp.submo.dto.SubscriptionDto;
 import com.jp.submo.repository.AllSubscriptionRepository;
@@ -34,7 +35,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.jp.submo.exception.SubscriptionException.throwError;
@@ -70,22 +73,37 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     ChefSubEarningRepository chefSubEarningRepository;
     @Autowired
     EntityManager entityManager;
+    @Autowired
+    private com.jp.submo.consumer.SubscriptionModuleConsumer subscriptionModuleConsumer;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public JpResponseModel createSubscription(SubscriptionDto subscriptionDto, String createdBy) {
-
+    	Map<String,Object> responseMap = new HashMap<>();
         AllSubscription subscription = getSubscription(subscriptionDto, entityManager, createdBy);
         SubscriptionCost cost = getSubscriptionCost(subscriptionDto, subscription, createdBy);
         SubscriptionPayment payment = getSubscriptionPayment(subscriptionDto, subscription, entityManager, createdBy);
         Collection<SubscriptionMeal> meals = getSubscriptionMeals(subscriptionDto, subscription, entityManager,
                 createdBy);
-
-        allSubscriptionRepository.save(subscription);
+        
+        subscription = allSubscriptionRepository.save(subscription);
         subscriptionCostRepository.save(cost);
         subscriptionMealRepository.saveAll(meals);
         subscriptionPaymentRepository.saveAndFlush(payment);
-        return success();
+        RazorpayRequestDto razorpayRequestDto=new RazorpayRequestDto();
+        razorpayRequestDto.setAmount(cost.getTotalAmountPaid());
+        razorpayRequestDto.setReason("create");
+        razorpayRequestDto.setReceiptId("Receipt #20");
+        razorpayRequestDto.setPayment_capture(true);
+        try {
+        	String s = subscriptionModuleConsumer.callRazorPayService(razorpayRequestDto);
+        	responseMap.put("razorpayId", s);
+        	responseMap.put("subscriptionId",subscription.getSubscriptionId());
+        return success(responseMap);
+        }catch(Exception ex) {
+        	return null;
+        }
+        
     }
 
     @Override
@@ -107,8 +125,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         Timestamp modifiedDate = Timestamp.valueOf(LocalDateTime.now());
         subscriptionEntity.setSubscriptionStatus(entityManager.getReference(SubscriptionStatus.class, 2L));
-        subscriptionEntity.setModifiedBy(modifiedBy);
-        subscriptionEntity.setLastModifiedDateTime(modifiedDate);
+        //subscriptionEntity.setModifiedBy(modifiedBy);
+        //subscriptionEntity.setLastModifiedDateTime(modifiedDate);
 
         SubscriptionPayment payment = subscriptionEntity.getSubscriptionPayment();
         payment.setPaymentStatus(entityManager.getReference(PaymentStatus.class, 2L));
@@ -165,8 +183,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         subscriptionActual.setActualStatusId(2L);
         subscriptionActual.setStartTime(Timestamp.valueOf(LocalDateTime.now()));
-        subscriptionActual.setModifiedBy(modifiedBy);
-        subscriptionActual.setLastModifiedDateTime(Timestamp.valueOf(LocalDateTime.now()));
+        //subscriptionActual.setModifiedBy(modifiedBy);
+        //subscriptionActual.setLastModifiedDateTime(Timestamp.valueOf(LocalDateTime.now()));
 
         subscriptionActualRepository.saveAndFlush(subscriptionActual);
 
@@ -187,8 +205,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         subscriptionActual.setActualStatusId(3L);
         subscriptionActual.setEndTime(Timestamp.valueOf(LocalDateTime.now()));
-        subscriptionActual.setModifiedBy(modifiedBy);
-        subscriptionActual.setLastModifiedDateTime(Timestamp.valueOf(LocalDateTime.now()));
+       // subscriptionActual.setModifiedBy(modifiedBy);
+       // subscriptionActual.setLastModifiedDateTime(Timestamp.valueOf(LocalDateTime.now()));
 
         subscriptionActualRepository.saveAndFlush(subscriptionActual);
 
@@ -211,8 +229,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         allSubscription.setSubscriptionStatus(entityManager.getReference(SubscriptionStatus.class, endSubscriptionDto
                 .getActualStatusId()));
-        allSubscription.setModifiedBy(modifiedBy);
-        allSubscription.setLastModifiedDateTime(Timestamp.valueOf(LocalDateTime.now()));
+		/*
+		 * allSubscription.setModifiedBy(modifiedBy);
+		 * allSubscription.setLastModifiedDateTime(Timestamp.valueOf(LocalDateTime.now()
+		 * ));
+		 */
 
         allSubscriptionRepository.saveAndFlush(allSubscription);
 

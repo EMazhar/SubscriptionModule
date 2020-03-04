@@ -5,14 +5,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import com.jp.submo.dto.JpResponseModel;
+import com.jp.submo.dto.SubscriptionActualDto;
+import com.jp.submo.dto.SubscriptionMenuDto;
 import com.jp.submo.repository.AllSubscriptionRepository;
 import com.jp.submo.repository.SubscriptionActualRepository;
+import com.jp.submo.repository.SubscriptionActualRepositoryNew;
 import com.jp.submo.repository.SubscriptionMenuRepository;
 import com.jp.submo.repository.SubscriptionTariffRepository;
+import com.jp.submo.repository.entity.SubscriptionActual;
+import com.jp.submo.repository.entity.SubscriptionActualNew;
 import com.jp.submo.repository.entity.SubscriptionMenu;
 import com.jp.submo.repository.entity.SubscriptionTariff;
 import com.jp.submo.util.SubscriptionUtility;
@@ -27,7 +34,7 @@ import com.jp.submo.util.SubscriptionUtility;
 public class SubscriptionStaticServiceImpl implements SubscriptionStaticService {
 	
 	@Autowired
-	private SubscriptionActualRepository subscriptionActualRepository;
+	private SubscriptionActualRepositoryNew subscriptionActualRepositoryNew;
 
 	@Autowired
 	private AllSubscriptionRepository allSubscriptionRepository;
@@ -38,12 +45,22 @@ public class SubscriptionStaticServiceImpl implements SubscriptionStaticService 
 	@Autowired
 	private SubscriptionMenuRepository subscriptionMenuRepository;
 	
+	@Autowired
+	private ModelMapper modelMapper;
+	
 
 	
 	@Override
 	public JpResponseModel fetchSubscriptionMenu() {
+		List<SubscriptionMenuDto> subMenuDtoList = new ArrayList<>();
 		try {
 			List<SubscriptionMenu> subscriptionMenuList=subscriptionMenuRepository.findAll();
+			for(SubscriptionMenu sm : subscriptionMenuList) {
+				SubscriptionMenuDto subMenuDto = modelMapper.map(sm,SubscriptionMenuDto.class);
+				//subMenuDto.setAllDishes(sm.getAllDishes());
+				subMenuDtoList.add(subMenuDto);
+			}
+			
 			return SubscriptionUtility.success(subscriptionMenuList);
 		}catch(Exception ex) {
 			ex.printStackTrace();
@@ -96,7 +113,7 @@ public class SubscriptionStaticServiceImpl implements SubscriptionStaticService 
 	@Override
 	public JpResponseModel fetchSubscriptionByUser(long userId) {
 		try {
-		return SubscriptionUtility.success(allSubscriptionRepository.findAllSubscriptionByUserId(userId));
+		return SubscriptionUtility.success(allSubscriptionRepository.findAllSubscription(userId));
 		}catch(Exception ex) {
 			ex.printStackTrace();
 			return SubscriptionUtility.error("Theres is no such user for user id :"+userId);
@@ -104,13 +121,27 @@ public class SubscriptionStaticServiceImpl implements SubscriptionStaticService 
 	}
 
 	@Override
-	public JpResponseModel fetchSubscriptionActualByUser(long userId) {
+	public JpResponseModel fetchSubscriptionActualService(long subscriptionId) {
+		List<SubscriptionActualDto> subDtoList = new ArrayList<>();;
 		try {
-			return SubscriptionUtility.success(subscriptionActualRepository.findByChefId(userId));
+			List<SubscriptionActualNew> response = subscriptionActualRepositoryNew.findAllBySubscriptionId(subscriptionId);
+			for(SubscriptionActualNew subnew:response) {
+				SubscriptionActualDto subDto= modelMapper.map(subnew,SubscriptionActualDto.class);
+				//subDto.setMealType(subnew.getMealType());
+						
+				subDtoList.add(subDto);
+				
+			}
+			return SubscriptionUtility.success(subDtoList);
 		}catch(Exception ex) {
 			ex.printStackTrace();
-			return SubscriptionUtility.error("Theres is no such user for user id :"+userId);
+			return SubscriptionUtility.error("Theres is no such user for user id :"+subscriptionId);
 		}
+	}
+	
+	@Bean
+	public ModelMapper getModelMapper() {
+		return new ModelMapper();
 	}
 	
 }

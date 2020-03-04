@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * @author chetan
@@ -18,17 +19,20 @@ import java.sql.Timestamp;
 
 @Repository
 public interface SubscriptionActualRepository extends JpaRepository<SubscriptionActual, Long> {
-    SubscriptionActual findOneBySubscriptionAndMealTypeAndDateAndActualStatusId(AllSubscription allSubscription, MealType mealType, Timestamp
-            date, Long actualStatusId);
+	SubscriptionActual findOneBySubscriptionAndMealTypeAndDateAndActualStatusId(AllSubscription allSubscription,
+			MealType mealType, Timestamp date, Long actualStatusId);
 
-    @Modifying
-    @Query("Update SubscriptionActual sa SET sa.actualStatusId=:statusId WHERE sa.actualStatusId=1L and sa.date > :today and sa.chefId=:chefId")
-    void cancelSubscriptionActual(@Param("statusId") Long statusId, @Param("chefId") Long chefId,@Param("today") Timestamp today);
-    
-    /**
-     * 
-     * @param chefId
-     * @return
-     */
-    SubscriptionActual findByChefId(long chefId);
+	@Modifying
+	@Query("Update SubscriptionActual sa SET sa.actualStatusId=:statusId WHERE sa.actualStatusId=1L and sa.date > :today and sa.chefId=:chefId")
+	void cancelSubscriptionActual(@Param("statusId") Long statusId, @Param("chefId") Long chefId,
+			@Param("today") Timestamp today);
+
+	/* *//**
+			 * 
+			 * @param chefId
+			 * @return
+			 * 
+			 *//*
+				 * List<SubscriptionActual> findBySubscriptionId(long subscriptionId);
+				 */
 }

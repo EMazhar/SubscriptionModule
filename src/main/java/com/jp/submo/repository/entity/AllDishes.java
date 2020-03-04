@@ -65,6 +65,7 @@ public class AllDishes implements Serializable {
 	@Column(name = "dish_category")
 	private Integer dishCategory;
 	
-	@OneToOne
-	private SubscriptionMenu subscriptionMenu;
+	/*
+	 * @OneToOne private SubscriptionMenu subscriptionMenu;
+	 */
 }

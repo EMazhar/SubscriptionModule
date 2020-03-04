@@ -21,7 +21,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Entity
 @Table(name = "meal_type_pl")
-public class MealType extends BaseEntity implements Serializable {
+public class MealType /* extends BaseEntity */implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

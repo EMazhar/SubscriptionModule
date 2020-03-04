@@ -50,7 +50,7 @@ public class AllSubscription extends BaseEntity implements Serializable {
     
     private Timestamp endDate;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     private UserProfiles userProfile;
 

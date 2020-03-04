@@ -26,6 +26,7 @@ public class SubscriptionDto {
     private LocalDate endDate;
 
     private long userId;
+    private long subscriptionId;
 
     private Long subscriptionDuration;
 

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface AllSubscriptionRepository extends JpaRepository<AllSubscription,Long> {
 
 	
-	@Query ("SELECT alls from AllSubscription as alls where alls.userProfile.userId=?1")
-	List<AllSubscription> findAllSubscriptionByUserId(long userId);
+	@Query ("SELECT als from AllSubscription as als where als.userProfile.userId=?1")
+	List<AllSubscription> findAllSubscription(long userId);
 	
 }
