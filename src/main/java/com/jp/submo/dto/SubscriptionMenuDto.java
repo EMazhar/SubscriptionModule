@@ -1,8 +1,6 @@
 package com.jp.submo.dto;
 
-import java.util.List;
-
-import com.jp.submo.repository.entity.AllDishes;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SubscriptionMenuDto {
 
-	private long menuItemId;
-	private int mealTypeId;
-	private List<AllDishes> allDishes;
+	private String mealType;
+	private DishDetailDTo dishDetail;
 }

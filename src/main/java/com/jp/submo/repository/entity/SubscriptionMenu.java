@@ -6,8 +6,10 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -37,15 +39,13 @@ public class SubscriptionMenu implements Serializable {
 	@Column(name="meal_type_id")
 	private int mealTypeId;
 	
+	@OneToOne
+	@JoinColumn(name = "dish_id")
+    private AllDishes allDishes;
+	
 	/*
-	 * @OneToMany
-	 * 
-	 * @JoinTable(name = "dish_id") private List<AllDishes> allDishes;
-	 * 
-	 * 
+	 * @Column(name = "dish_id") private long dishId;
 	 */
-	@Column(name = "dish_id")
-	private long dishId;
 	
 	@Column(name="softdeleteflag")
 	private byte softdeleteflag;
