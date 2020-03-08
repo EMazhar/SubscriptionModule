@@ -20,7 +20,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "subscription_duration_pl")
-public class SubscriptionDuration extends BaseEntity implements Serializable {
+public class SubscriptionDuration /* extends BaseEntity */ implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

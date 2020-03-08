@@ -16,12 +16,12 @@ public class SubscriptionModuleConsumer {
 
 	
 	public String callRazorPayService (RazorpayRequestDto razorpayRequestDto) throws Exception {
-		System.out.println("Hai re ");
+		
 		Order order=null;
 		try {
 		RazorpayClient razorpayClient = new RazorpayClient(AppConstant.RAZORPAY_ID,AppConstant.RAZORPAY_AUTH_TOKEN);
 		JSONObject orderRequest = new JSONObject();
-		System.out.println("Hai re ");
+		
 		orderRequest.put("amount", razorpayRequestDto.getAmount()*100);
 		orderRequest.put("currency", "INR");
 		orderRequest.put("receipt",razorpayRequestDto.getReceiptId());// razorpayRequestDto.getReceiptId());

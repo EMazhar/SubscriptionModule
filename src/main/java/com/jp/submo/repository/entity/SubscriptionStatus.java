@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "subscription_status_pl")
-public class SubscriptionStatus extends BaseEntity implements Serializable {
+public class SubscriptionStatus /* extends BaseEntity */ implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

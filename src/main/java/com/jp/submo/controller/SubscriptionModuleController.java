@@ -7,6 +7,7 @@ import com.jp.submo.dto.AssignChefToSubscriptionDto;
 import com.jp.submo.dto.ConfirmSubscriptionDto;
 import com.jp.submo.dto.CookingDto;
 import com.jp.submo.dto.JpResponseModel;
+import com.jp.submo.dto.PostPaymentDto;
 import com.jp.submo.dto.SubscriptionDto;
 import com.jp.submo.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,4 +129,25 @@ public class SubscriptionModuleController {
             return new ResponseEntity<>(error(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    /**
+     * this service is meant for post payment activity
+     * @param postPaymentDto
+     * @return
+     */
+    @PostMapping("/post-payment")
+    public ResponseEntity<JpResponseModel> subscriptionPostPayment(@RequestBody PostPaymentDto postPaymentDto) {
+
+    	try {
+    	 return new ResponseEntity<>(subscriptionService.postPaymentActivity(postPaymentDto),
+                 HttpStatus.OK);
+    	 
+    	} catch (SubscriptionException subExp) {
+            return new ResponseEntity<>(error(subExp.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    	}catch(Exception ex) {
+    		ex.printStackTrace();
+    		return new ResponseEntity<>(error(), HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+    }
+    
 }

@@ -19,4 +19,5 @@ public interface AllSubscriptionRepository extends JpaRepository<AllSubscription
 	@Query ("SELECT als from AllSubscription as als where als.userProfile.userId=?1")
 	List<AllSubscription> findAllSubscription(long userId);
 	
+	
 }

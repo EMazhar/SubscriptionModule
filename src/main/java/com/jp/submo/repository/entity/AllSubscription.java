@@ -54,11 +54,11 @@ public class AllSubscription extends BaseEntity implements Serializable {
     @JoinColumn(name="user_id")
     private UserProfiles userProfile;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="subscription_duration_id")
     private SubscriptionDuration subscriptionDuration;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="subscription_status_id")
     private SubscriptionStatus subscriptionStatus;
 

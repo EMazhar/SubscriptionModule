@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SubscriptionActualDto {
 	private Long subscriptionActualId;
-	private long mealTypeId;
+	private String mealType;
 	 private long subscriptionId;
-	 private Long actualStatusId;
+	 private String actualStatus;
 	 private Long chefId;
 	 private Timestamp date;
 	 private Timestamp startTime;

@@ -5,6 +5,7 @@ import com.jp.submo.dto.ConfirmSubscriptionDto;
 import com.jp.submo.dto.CookingDto;
 import com.jp.submo.dto.EndSubscriptionDto;
 import com.jp.submo.dto.JpResponseModel;
+import com.jp.submo.dto.PostPaymentDto;
 import com.jp.submo.dto.RazorpayRequestDto;
 import com.jp.submo.dto.ReassignChefToSubscriptionDto;
 import com.jp.submo.dto.SubscriptionDto;
@@ -25,6 +26,8 @@ import com.jp.submo.repository.entity.SubscriptionCost;
 import com.jp.submo.repository.entity.SubscriptionMeal;
 import com.jp.submo.repository.entity.SubscriptionPayment;
 import com.jp.submo.repository.entity.SubscriptionStatus;
+import com.jp.submo.util.SubscriptionUtility;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,7 +94,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscriptionMealRepository.saveAll(meals);
         subscriptionPaymentRepository.saveAndFlush(payment);
         RazorpayRequestDto razorpayRequestDto=new RazorpayRequestDto();
-        razorpayRequestDto.setAmount(cost.getTotalAmountPaid());
+        razorpayRequestDto.setAmount(payment.getTotalAmountPaid());
         razorpayRequestDto.setReason("create");
         razorpayRequestDto.setReceiptId("Receipt #20");
         razorpayRequestDto.setPayment_capture(true);
@@ -101,7 +104,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         	responseMap.put("subscriptionId",subscription.getSubscriptionId());
         return success(responseMap);
         }catch(Exception ex) {
-        	return null;
+        	ex.printStackTrace();
+        	return SubscriptionUtility.error();
         }
         
     }
@@ -326,6 +330,22 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         chefSubEarning.setTaxComponent1(0.0);
         chefSubEarning.setTaxComponent2(0.0);
     }
+
+    /**
+     * here we  perform all the post payment activity . update or create
+     * send notifcation to user / admin
+     */
+	@Override
+	@Transactional
+	public JpResponseModel postPaymentActivity(PostPaymentDto postPaymentDto) {
+		try {
+		subscriptionPaymentRepository.updateSubscriptionPayment(postPaymentDto.getSubscriptionId(),postPaymentDto.getRazorOrderId(),postPaymentDto.getPaymentStatus());
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			throwError("Not a valid subscription Id");
+		}
+		return success();
+	}
 
 
 }

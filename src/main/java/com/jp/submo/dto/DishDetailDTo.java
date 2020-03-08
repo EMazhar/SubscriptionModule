@@ -13,7 +13,6 @@ public class DishDetailDTo {
 	private String dishName;
 	private String discription;
 	private String dishImage;
-	private String dishType;
 	private String dishCategory;
 
 }

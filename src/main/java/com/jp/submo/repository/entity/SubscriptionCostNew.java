@@ -1,30 +1,27 @@
 package com.jp.submo.repository.entity;
 
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import java.io.Serializable;
-import java.sql.Timestamp;
-
 /**
- * @author chetan
+ * @author Ehtesham
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "subscription_costs")
-public class SubscriptionCost extends BaseEntity implements Serializable {
+public class SubscriptionCostNew implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -40,10 +37,16 @@ public class SubscriptionCost extends BaseEntity implements Serializable {
     @Column(name = "discount_ref_key")
     private Long discountRefKey;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subscription_id")
-    private AllSubscription allSubscription;
-
+	/*
+	 * @OneToOne(fetch = FetchType.LAZY)
+	 * 
+	 * @JoinColumn(name = "subscription_id") private AllSubscription
+	 * allSubscription;
+	 */
+    @Column(name = "subscription_id")
+    private long subscriptionId;
+    
+    
     @Column(name = "taxes_component_1")
     private double taxesComponent1;
 

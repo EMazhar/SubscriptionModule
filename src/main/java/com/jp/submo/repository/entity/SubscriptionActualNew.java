@@ -40,7 +40,7 @@ public class SubscriptionActualNew implements Serializable {
     private long subscriptionId;
 
     @Column(name = "actual_status_id")
-    private Long actualStatusId;
+    private long actualStatusId;
 
     @Column(name = "chef_id")
     private Long chefId;

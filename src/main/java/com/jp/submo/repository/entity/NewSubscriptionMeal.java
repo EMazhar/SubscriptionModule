@@ -17,14 +17,14 @@ import java.io.Serializable;
 import java.time.LocalTime;
 
 /**
- * @author chetan
+ * @author Ehtesham
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "subscription_meals")
-public class SubscriptionMeal extends BaseEntity implements Serializable {
+public class NewSubscriptionMeal implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,8 +39,7 @@ public class SubscriptionMeal extends BaseEntity implements Serializable {
     @Column(name="time")
     private LocalTime time;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="subscription_id")
-    private AllSubscription allSubscription;
+    @Column(name="subscription_id")
+    private long subscriptionId;
 
 }

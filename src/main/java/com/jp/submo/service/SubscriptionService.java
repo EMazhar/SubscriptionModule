@@ -5,6 +5,7 @@ import com.jp.submo.dto.ConfirmSubscriptionDto;
 import com.jp.submo.dto.CookingDto;
 import com.jp.submo.dto.EndSubscriptionDto;
 import com.jp.submo.dto.JpResponseModel;
+import com.jp.submo.dto.PostPaymentDto;
 import com.jp.submo.dto.ReassignChefToSubscriptionDto;
 import com.jp.submo.dto.SubscriptionDto;
 
@@ -27,6 +28,7 @@ public interface SubscriptionService {
 
     JpResponseModel reassignChefToSubscription(ReassignChefToSubscriptionDto reassignChefToSubscriptionDto, String
             createdBy);
+    JpResponseModel postPaymentActivity(PostPaymentDto postPaymentDto);
 
 
 }

@@ -20,7 +20,7 @@ public class SubscriptionModuleSecondController {
 	@Autowired
 	private SubscriptionStaticService subscriptionStaticService;
 	
-	@GetMapping("/subscription")
+	@GetMapping("/subscription-actuals")
     public ResponseEntity<JpResponseModel> fetchSubscriptionActual(@RequestBody() SubscriptionDto subscriptionDto) {
 		return new ResponseEntity<>(subscriptionStaticService.fetchSubscriptionActualService(subscriptionDto.getSubscriptionId()),HttpStatus.OK);
 		
@@ -38,10 +38,9 @@ public class SubscriptionModuleSecondController {
 		
 	}
 	
-	@GetMapping("/subscriptionbyuser")
+	@GetMapping("/user-subscription")
     public ResponseEntity<JpResponseModel> fetchSubscriptionByUser(@RequestBody SubscriptionDto subscriptionDto) {
 		return new ResponseEntity<> (subscriptionStaticService.fetchSubscriptionByUser(subscriptionDto.getUserId()),HttpStatus.OK);
-		
 		
 	}	
 

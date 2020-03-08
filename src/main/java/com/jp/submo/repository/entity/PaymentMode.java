@@ -20,7 +20,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "payment_mode_pl")
-public class PaymentMode extends BaseEntity implements Serializable {
+public class PaymentMode implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

@@ -20,7 +20,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "third_party_provider_pl")
-public class ThirdPartyProvider extends BaseEntity implements Serializable {
+public class ThirdPartyProvider /* extends BaseEntity */ implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id

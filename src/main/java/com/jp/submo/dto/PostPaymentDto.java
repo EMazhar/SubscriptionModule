@@ -4,15 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * @author chetan
+/*
+ * Ehtesham
  */
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubscriptionMealDto {
-    private long mealType;
-    private String time;
-    private String mealTypeDscription;
+public class PostPaymentDto {
+
+	private long subscriptionId;
+	private String razorOrderId;
+	private int paymentStatus;
 }
