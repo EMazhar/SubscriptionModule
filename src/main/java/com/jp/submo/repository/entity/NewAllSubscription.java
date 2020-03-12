@@ -2,6 +2,7 @@ package com.jp.submo.repository.entity;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -41,6 +44,15 @@ public class NewAllSubscription implements Serializable {
     private String description;
     @Column(name="number_of_people")
     private Long noOfPeople;
+    
+    @Column(name="longitude")
+    private double longitude;
+    
+    @Column(name="latitude")
+    private double latitude;
+    
+    @Column(name ="subscription_address")
+    private String subscriptionAddress;
 
     @Column(name = "start_date")
     private Timestamp startDate;
@@ -48,37 +60,21 @@ public class NewAllSubscription implements Serializable {
     private Timestamp endDate;
 
 	/*
-	 * @ManyToOne(fetch = FetchType.LAZY, optional = false)
-	 * 
-	 * @JoinColumn(name="user_id") private UserProfiles userProfile;
+	 * @Column(name = "user_id") private long userId;
 	 */
-    @Column(name = "user_id")
-    private long userId;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="subscription_duration_id")
-    private SubscriptionDuration subscriptionDuration;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private UserProfiles userDetail;
+    
+    @Column(name="subscription_duration_id")
+    private long subscriptionDurationId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="subscription_status_id")
-    private SubscriptionStatus subscriptionStatus;
+    @Column(name="subscription_status_id")
+    private long subscriptionStatusId;
 
-	
 	/*
-	 * @OneToOne(mappedBy = "allSubscription") private SubscriptionCost
-	 * subscriptionCost;
-	 * 
-	 */
-	/*
-	 * @OneToOne(mappedBy = "allSubscription") private SubscriptionPayment
-	 * subscriptionPayment;
-	 */
-	/*
-	 * @OneToMany(mappedBy = "allSubscription") private Collection<SubscriptionMeal>
-	 * subscriptionMeals;
-	 */
-	/*
-	 * @OneToMany(mappedBy = "subscription") private Collection<SubscribedChef>
+	 * @OneToMany(mappedBy = "subscription") private Collection<NewSubscribedChef>
 	 * subscribedChefs;
 	 */
 }

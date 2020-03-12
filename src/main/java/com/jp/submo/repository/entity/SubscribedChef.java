@@ -26,7 +26,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name="subscribed_chefs")
 @DynamicUpdate
-public class SubscribedChef extends BaseEntity implements Serializable {
+public class SubscribedChef /* extends BaseEntity */ implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id

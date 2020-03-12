@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +21,7 @@ public class SubscriptionModuleSecondController {
 	@Autowired
 	private SubscriptionStaticService subscriptionStaticService;
 	
-	@GetMapping("/subscription-actuals")
+	@PostMapping("/subscription-actuals")
     public ResponseEntity<JpResponseModel> fetchSubscriptionActual(@RequestBody() SubscriptionDto subscriptionDto) {
 		return new ResponseEntity<>(subscriptionStaticService.fetchSubscriptionActualService(subscriptionDto.getSubscriptionId()),HttpStatus.OK);
 		
@@ -38,11 +39,20 @@ public class SubscriptionModuleSecondController {
 		
 	}
 	
-	@GetMapping("/user-subscription")
+	@PostMapping("/user-subscription")
     public ResponseEntity<JpResponseModel> fetchSubscriptionByUser(@RequestBody SubscriptionDto subscriptionDto) {
 		return new ResponseEntity<> (subscriptionStaticService.fetchSubscriptionByUser(subscriptionDto.getUserId()),HttpStatus.OK);
 		
 	}	
+	
+	@PostMapping("/subscription")
+    public ResponseEntity<JpResponseModel> fetchSubscription(@RequestBody SubscriptionDto subscriptionDto) {
+		return new ResponseEntity<> (subscriptionStaticService.getSubscriptionDetail(subscriptionDto.getSubscriptionId()),HttpStatus.OK);
+		
+	}	
+	
+	
+	
 
 	
 }

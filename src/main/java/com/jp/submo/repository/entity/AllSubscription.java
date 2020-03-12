@@ -44,6 +44,15 @@ public class AllSubscription extends BaseEntity implements Serializable {
     private String description;
     @Column(name="number_of_people")
     private Long noOfPeople;
+    
+    @Column(name="longitude")
+    private double longitude;
+    
+    @Column(name="latitude")
+    private double latitude;
+    
+    @Column(name ="subscription_address")
+    private String subscriptionAddress;
 
     @Column(name = "start_date")
     private Timestamp startDate;

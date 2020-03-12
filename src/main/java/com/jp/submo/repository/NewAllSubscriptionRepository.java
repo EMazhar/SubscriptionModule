@@ -15,8 +15,10 @@ import com.jp.submo.repository.entity.NewAllSubscription;
 public interface NewAllSubscriptionRepository extends JpaRepository<NewAllSubscription,Long> {
 
 	
-	@Query ("SELECT als from NewAllSubscription as als where als.userId=?1")
+	@Query ("SELECT als from NewAllSubscription as als where als.userDetail.userId=?1")
 	List<NewAllSubscription> findAllSubscription(long userId);
+	
+	List<NewAllSubscription> findAllBySubscriptionId(long subscriptionId);
 	
 	
 }

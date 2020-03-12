@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NewSubscribedChefDto {
-	private Long subscribedChefId;
-	private long chefId;
+
+	public String chefName;
+	public String chefImage;
 	private Timestamp startDate;
 	private Timestamp endDate;
 	private String subscribedChefStatus;

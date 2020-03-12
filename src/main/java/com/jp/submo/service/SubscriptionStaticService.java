@@ -32,4 +32,11 @@ public interface SubscriptionStaticService {
 	 * @return
 	 */
 	JpResponseModel fetchSubscriptionActualService(long subscriptionId);
+	
+	/**
+	 * 
+	 * @param subscriptionId
+	 * @return
+	 */
+	JpResponseModel getSubscriptionDetail(long subscriptionId);
 }

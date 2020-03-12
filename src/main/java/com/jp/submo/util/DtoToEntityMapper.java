@@ -40,6 +40,9 @@ public class DtoToEntityMapper {
         subscription.setEndDate(Timestamp.valueOf(subscriptionDto.getEndDate().atStartOfDay()));
         subscription.setStartDate(Timestamp.valueOf(subscriptionDto.getStartDate().atStartOfDay()));
         subscription.setDescription(subscriptionDto.getDescription());
+        subscription.setLongitude(subscriptionDto.getLongitude());
+        subscription.setLatitude(subscriptionDto.getLatitude());
+        subscription.setSubscriptionAddress(subscriptionDto.getSubscriptionAddress());
         subscription.setNoOfPeople(subscriptionDto.getNoOfPeople());
         subscription.setSubscriptionStatus(entityManager.getReference(SubscriptionStatus.class, 1L));
         subscription.setSubscriptionDuration(entityManager.getReference(SubscriptionDuration.class, subscriptionDto
@@ -126,8 +129,8 @@ public class DtoToEntityMapper {
         chef.setChefId(chefId);
         chef.setSubscribedChefStatus(entityManager.getReference(SubscribedChefStatus.class, 1L));
         chef.setSubscription(allSubscription);
-        chef.setCreatedBy(createdBy);
-        chef.setCreatedDateTime(Timestamp.valueOf(LocalDateTime.now()));
+        //chef.setCreatedBy(createdBy);
+        //chef.setCreatedDateTime(Timestamp.valueOf(LocalDateTime.now()));
         chef.setStartDate(allSubscription.getStartDate());
         chef.setEndDate(allSubscription.getEndDate());
         return chef;

@@ -27,6 +27,9 @@ public class SubscriptionDto {
 
     private long userId;
     private long subscriptionId;
+    private double longitude;
+    private double latitude;
+    private String subscriptionAddress;
 
     private Long subscriptionDuration;
 
