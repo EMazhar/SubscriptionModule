@@ -43,7 +43,6 @@ public class UserProfiles /* extends BaseEntity */ implements Serializable {
     @OneToMany
 	@JoinColumn(name = "user_id", referencedColumnName = "user_id")
 	private List<UserSavedAddress> userSavedAddress= new ArrayList<>();
-    
 
 	@Column(name = "phone_number")
 	private long phoneNum;

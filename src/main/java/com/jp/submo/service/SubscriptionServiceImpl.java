@@ -1,5 +1,6 @@
 package com.jp.submo.service;
 
+import com.jp.submo.consumer.SubscriptionModuleConsumer;
 import com.jp.submo.dto.AssignChefToSubscriptionDto;
 import com.jp.submo.dto.ConfirmSubscriptionDto;
 import com.jp.submo.dto.CookingDto;
@@ -77,7 +78,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Autowired
     EntityManager entityManager;
     @Autowired
-    private com.jp.submo.consumer.SubscriptionModuleConsumer subscriptionModuleConsumer;
+    private SubscriptionModuleConsumer subscriptionModuleConsumer;
 
     @Override
     @Transactional(rollbackFor = Exception.class)

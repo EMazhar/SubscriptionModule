@@ -20,5 +20,7 @@ public interface NewAllSubscriptionRepository extends JpaRepository<NewAllSubscr
 	
 	List<NewAllSubscription> findAllBySubscriptionId(long subscriptionId);
 	
+	//@Query("SELECT als.subscriptionAddress,als.subscriptionId from NewAllSubscription as ")
+	
 	
 }

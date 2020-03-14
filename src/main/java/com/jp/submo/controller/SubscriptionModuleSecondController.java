@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jp.submo.dto.JpResponseModel;
 import com.jp.submo.dto.SubscriptionDto;
+import com.jp.submo.dto.SubscriptionRequestDto;
 import com.jp.submo.service.SubscriptionStaticService;
 
 @RestController
@@ -40,16 +41,30 @@ public class SubscriptionModuleSecondController {
 	}
 	
 	@PostMapping("/user-subscription")
-    public ResponseEntity<JpResponseModel> fetchSubscriptionByUser(@RequestBody SubscriptionDto subscriptionDto) {
+    public ResponseEntity<JpResponseModel> fetchSubscriptionByUser(@RequestBody SubscriptionRequestDto subscriptionDto) {
 		return new ResponseEntity<> (subscriptionStaticService.fetchSubscriptionByUser(subscriptionDto.getUserId()),HttpStatus.OK);
 		
 	}	
 	
 	@PostMapping("/subscription")
-    public ResponseEntity<JpResponseModel> fetchSubscription(@RequestBody SubscriptionDto subscriptionDto) {
+    public ResponseEntity<JpResponseModel> fetchSubscription(@RequestBody SubscriptionRequestDto subscriptionDto) {
 		return new ResponseEntity<> (subscriptionStaticService.getSubscriptionDetail(subscriptionDto.getSubscriptionId()),HttpStatus.OK);
 		
 	}	
+	
+	@GetMapping("/allsubscription")
+    public ResponseEntity<JpResponseModel> fetchSubscription() {
+		return new ResponseEntity<>(subscriptionStaticService.getAllSubscriptionDetail(),HttpStatus.OK);
+		
+	}
+	
+	@PostMapping("/chef-subscription")
+    public ResponseEntity<JpResponseModel> fetchChefSubscription(@RequestBody SubscriptionRequestDto subscriptionDto) {
+		//@RequestBody Long chefId
+		return new ResponseEntity<>(subscriptionStaticService.getChefSubscriptionDetail(subscriptionDto.getChefId()),HttpStatus.OK);
+		
+	}
+	
 	
 	
 	

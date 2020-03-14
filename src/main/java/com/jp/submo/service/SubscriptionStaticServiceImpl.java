@@ -2,7 +2,6 @@ package com.jp.submo.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import com.jp.submo.dto.ChefSubscriptionDto;
 import com.jp.submo.dto.DishDetailDTo;
 import com.jp.submo.dto.FetchSubsResponseDto;
 import com.jp.submo.dto.JpResponseModel;
@@ -21,19 +21,13 @@ import com.jp.submo.dto.NewSubscriptionPaymentDto;
 import com.jp.submo.dto.SubscriptionActualDto;
 import com.jp.submo.dto.SubscriptionDetailResponseDto;
 import com.jp.submo.dto.SubscriptionMealDto;
-import com.jp.submo.dto.SubscriptionMenuDto;
-import com.jp.submo.dto.SubscriptionPaymentDto;
-
-import com.jp.submo.repository.AllSubscriptionRepository;
 import com.jp.submo.repository.ChefDetailRepository;
 import com.jp.submo.repository.NewAllSubscriptionRepository;
 import com.jp.submo.repository.NewSubscribedChefRepository;
 import com.jp.submo.repository.NewSubscriptionCostRepository;
 import com.jp.submo.repository.NewSubscriptionMealRepository;
 import com.jp.submo.repository.NewSubscriptionPaymentRepository;
-import com.jp.submo.repository.SubscriptionActualRepository;
 import com.jp.submo.repository.SubscriptionActualRepositoryNew;
-import com.jp.submo.repository.SubscriptionCostRepository;
 import com.jp.submo.repository.SubscriptionMenuRepository;
 import com.jp.submo.repository.SubscriptionTariffRepository;
 import com.jp.submo.repository.entity.AllDishes;
@@ -42,8 +36,6 @@ import com.jp.submo.repository.entity.NewAllSubscription;
 import com.jp.submo.repository.entity.NewSubscribedChef;
 import com.jp.submo.repository.entity.NewSubscriptionMeal;
 import com.jp.submo.repository.entity.NewSubscriptionPayment;
-import com.jp.submo.repository.entity.SubscribedChef;
-import com.jp.submo.repository.entity.SubscriptionActual;
 import com.jp.submo.repository.entity.SubscriptionActualNew;
 import com.jp.submo.repository.entity.SubscriptionCostNew;
 import com.jp.submo.repository.entity.SubscriptionMenu;
@@ -95,9 +87,6 @@ public class SubscriptionStaticServiceImpl implements SubscriptionStaticService 
 	
 	@Autowired
 	private SubscriptionActualRepositoryNew subscriptionActualRepositoryNew;
-
-	@Autowired
-	private AllSubscriptionRepository allSubscriptionRepository;
 	
 	@Autowired
 	private NewAllSubscriptionRepository newAllSubscriptionRepository;
@@ -179,8 +168,6 @@ public class SubscriptionStaticServiceImpl implements SubscriptionStaticService 
 		try {
 			List<SubscriptionTariff> subsTariffList = subscriptionTariffRepository.findAll();
 			
-			List<Double> tariffwkList=new ArrayList<>();
-			List<Double> tariffMonList=new ArrayList<>();
 			Map<String,List<Double>> lookupWkMap = new HashMap<>();
 			Map<String,List<Double>> lookupMonMap = new HashMap<>();
 			
@@ -353,6 +340,36 @@ public class SubscriptionStaticServiceImpl implements SubscriptionStaticService 
 			return SubscriptionUtility.error("Theres is no such subscription for subscription id :"+subscriptionId);
 		}
 
+	}
+
+	@Override
+	public JpResponseModel getAllSubscriptionDetail() {
+		List<SubscriptionDetailResponseDto> responseDtoList= new ArrayList<>();
+		try {
+		List<NewAllSubscription> subscriptionList = newAllSubscriptionRepository.findAll();
+		for(NewAllSubscription nas:subscriptionList) {
+			SubscriptionDetailResponseDto sdr = modelMapper.map(nas, SubscriptionDetailResponseDto.class);
+			sdr.setSubscriptionStatus(SubcriptionStatusMap.get((int)nas.getSubscriptionStatusId()));
+			sdr.setSubscriptionDeration(SubcriptionDuratMap.get((int)nas.getSubscriptionDurationId()));
+			responseDtoList.add(sdr);
+		}
+		return SubscriptionUtility.success(responseDtoList);
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			return SubscriptionUtility.error();
+		}
+	}
+
+	@Override
+	public JpResponseModel getChefSubscriptionDetail(long chefId) {
+		try {
+			List<ChefSubscriptionDto>  scList=newSubscribedChefRepository.findAllByChefId(chefId);
+	
+			return SubscriptionUtility.success(scList);
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			return SubscriptionUtility.error("There is no subscription assigend to chef Id : "+chefId);
+		}
 	}
 	
 }

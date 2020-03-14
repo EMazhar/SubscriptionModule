@@ -1,9 +1,7 @@
 package com.jp.submo.repository.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicUpdate;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,8 +12,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.io.Serializable;
-import java.sql.Timestamp;
+
+import org.hibernate.annotations.DynamicUpdate;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author chetan
@@ -50,6 +52,5 @@ public class SubscribedChef /* extends BaseEntity */ implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="subscribed_chef_status_id")
     private SubscribedChefStatus subscribedChefStatus;
-
 
 }

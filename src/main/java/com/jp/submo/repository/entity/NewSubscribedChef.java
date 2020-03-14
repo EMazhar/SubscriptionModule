@@ -13,9 +13,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * @author Ehtesham
@@ -49,6 +51,7 @@ public class NewSubscribedChef implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="subscribed_chef_status_id")
     private SubscribedChefStatus subscribedChefStatus;
+
 
 
 }

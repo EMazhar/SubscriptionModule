@@ -39,4 +39,17 @@ public interface SubscriptionStaticService {
 	 * @return
 	 */
 	JpResponseModel getSubscriptionDetail(long subscriptionId);
+	
+	/**
+	 * 
+	 * @return
+	 */
+	JpResponseModel getAllSubscriptionDetail();
+	
+	/**
+	 * 
+	 * @param chefId
+	 * @return
+	 */
+	JpResponseModel getChefSubscriptionDetail(long chefId);
 }
