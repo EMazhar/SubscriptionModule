@@ -20,6 +20,9 @@ public interface NewAllSubscriptionRepository extends JpaRepository<NewAllSubscr
 	
 	List<NewAllSubscription> findAllBySubscriptionId(long subscriptionId);
 	
+	@Query("SELECT als from NewAllSubscription as als where als.subscriptionStatusId=?1 AND als.softdeleteflag=0")
+	List<NewAllSubscription> findAllBySubscritpStatus(long subscriptionStatusId);
+	
 	//@Query("SELECT als.subscriptionAddress,als.subscriptionId from NewAllSubscription as ")
 	
 	

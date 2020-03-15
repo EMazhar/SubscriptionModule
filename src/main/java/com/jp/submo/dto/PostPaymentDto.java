@@ -15,5 +15,6 @@ public class PostPaymentDto {
 
 	private long subscriptionId;
 	private String razorOrderId;
+	private int subscriptionStatus;
 	private int paymentStatus;
 }

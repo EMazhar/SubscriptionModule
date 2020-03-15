@@ -340,7 +340,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	@Transactional
 	public JpResponseModel postPaymentActivity(PostPaymentDto postPaymentDto) {
 		try {
-		subscriptionPaymentRepository.updateSubscriptionPayment(postPaymentDto.getSubscriptionId(),postPaymentDto.getRazorOrderId(),postPaymentDto.getPaymentStatus());
+			subscriptionPaymentRepository.updateSubscriptionPayment(postPaymentDto.getSubscriptionId(),postPaymentDto.getRazorOrderId(),postPaymentDto.getPaymentStatus());
+			allSubscriptionRepository.updateSubscriptionStatus(postPaymentDto.getSubscriptionId(),postPaymentDto.getSubscriptionStatus());
 		}catch(Exception ex) {
 			ex.printStackTrace();
 			throwError("Not a valid subscription Id");

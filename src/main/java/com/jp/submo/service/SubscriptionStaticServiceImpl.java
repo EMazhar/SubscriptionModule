@@ -344,9 +344,11 @@ public class SubscriptionStaticServiceImpl implements SubscriptionStaticService 
 
 	@Override
 	public JpResponseModel getAllSubscriptionDetail() {
+		
 		List<SubscriptionDetailResponseDto> responseDtoList= new ArrayList<>();
 		try {
-		List<NewAllSubscription> subscriptionList = newAllSubscriptionRepository.findAll();
+			
+		List<NewAllSubscription> subscriptionList = newAllSubscriptionRepository.findAllBySubscritpStatus(2);
 		for(NewAllSubscription nas:subscriptionList) {
 			SubscriptionDetailResponseDto sdr = modelMapper.map(nas, SubscriptionDetailResponseDto.class);
 			sdr.setSubscriptionStatus(SubcriptionStatusMap.get((int)nas.getSubscriptionStatusId()));

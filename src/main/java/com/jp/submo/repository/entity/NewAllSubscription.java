@@ -54,10 +54,6 @@ public class NewAllSubscription implements Serializable {
     private Timestamp startDate;
     
     private Timestamp endDate;
-
-	/*
-	 * @Column(name = "user_id") private long userId;
-	 */
     
     @OneToOne
     @JoinColumn(name = "user_id")
@@ -68,6 +64,8 @@ public class NewAllSubscription implements Serializable {
 
     @Column(name="subscription_status_id")
     private long subscriptionStatusId;
+    
+    private byte softdeleteflag;
 
 	/*
 	 * @OneToMany(mappedBy = "subscription") private Collection<NewSubscribedChef>
