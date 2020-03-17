@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @author chetan
+ * @author chetan,Ehtesham
  */
 
 @Data
@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EndSubscriptionDto {
 
-    private Long subscriptionId;
-    private Long actualStatusId;
+    private long subscriptionId;
+    private long actualStatusId;
+    private long subscriptionStatusId;
+    private String endType;
 }

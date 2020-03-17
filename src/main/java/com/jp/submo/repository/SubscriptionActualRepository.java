@@ -1,20 +1,19 @@
 package com.jp.submo.repository;
 
-import com.jp.submo.repository.entity.AllSubscription;
-import com.jp.submo.repository.entity.MealType;
-import com.jp.submo.repository.entity.SubscriptionActual;
-import com.jp.submo.repository.entity.SubscriptionMeal;
+import java.sql.Timestamp;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
-import java.util.List;
+import com.jp.submo.repository.entity.AllSubscription;
+import com.jp.submo.repository.entity.MealType;
+import com.jp.submo.repository.entity.SubscriptionActual;
 
 /**
- * @author chetan
+ * @author chetan,Ehtesham
  */
 
 @Repository
@@ -27,12 +26,4 @@ public interface SubscriptionActualRepository extends JpaRepository<Subscription
 	void cancelSubscriptionActual(@Param("statusId") Long statusId, @Param("chefId") Long chefId,
 			@Param("today") Timestamp today);
 
-	/* *//**
-			 * 
-			 * @param chefId
-			 * @return
-			 * 
-			 *//*
-				 * List<SubscriptionActual> findBySubscriptionId(long subscriptionId);
-				 */
 }

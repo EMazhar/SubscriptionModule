@@ -55,7 +55,7 @@ import static com.jp.submo.util.SubscriptionUtility.success;
 
 
 /**
- * @author chetan
+ * @author chetan,Ehtesham
  */
 
 @Service
@@ -217,7 +217,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         return success();
     }
-
+    
+    /**
+     *  to end subscription 
+     *  @param 
+     *  {@code:}
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public JpResponseModel endSubscription(EndSubscriptionDto endSubscriptionDto, String createdBy, String modifiedBy) {
@@ -229,11 +234,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
         AllSubscription allSubscription = subscription.get();
 
-        endSubscriptionsForAllChefs(endSubscriptionDto.getActualStatusId(), createdBy,
+        endSubscriptionsForAllChefs(endSubscriptionDto.getActualStatusId(),endSubscriptionDto.getEndType() ,createdBy,
                 allSubscription);
 
         allSubscription.setSubscriptionStatus(entityManager.getReference(SubscriptionStatus.class, endSubscriptionDto
-                .getActualStatusId()));
+                .getSubscriptionStatusId()));
 		/*
 		 * allSubscription.setModifiedBy(modifiedBy);
 		 * allSubscription.setLastModifiedDateTime(Timestamp.valueOf(LocalDateTime.now()
@@ -241,6 +246,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		 */
 
         allSubscriptionRepository.saveAndFlush(allSubscription);
+       // allSubscriptionRepository.updateSubscriptionStatus(allSubscription.getSubscriptionId(),endSubscriptionDto.getSubscriptionId());
 
         //todo: send notification and emails
 
@@ -260,7 +266,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
         AllSubscription allSubscription = subscription.get();
 
-        endSubscriptionsForAllChefs(reassignChefToSubscriptionDto.getActualStatusId(), createdBy, allSubscription);
+        endSubscriptionsForAllChefs(reassignChefToSubscriptionDto.getActualStatusId(),"organic", createdBy, allSubscription);
 
 
         LocalDateTime startDate = LocalDate.now().atStartOfDay().plusDays(1);
@@ -294,42 +300,55 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscribedChefRepository.saveAndFlush(subscribedChef);
     }
 
-    private void endSubscriptionsForAllChefs(Long actualStatusId, String createdBy, AllSubscription allSubscription) {
+    private void endSubscriptionsForAllChefs(Long actualStatusId, String endType,String createdBy, AllSubscription allSubscription) {
         Collection<SubscribedChef> allChefs = allSubscription.getSubscribedChefs();
         if (allChefs != null && !allChefs.isEmpty()) {
             allChefs.forEach(subscribedChef -> {
-                endSubProcessing(actualStatusId, subscribedChef.getChefId(), allSubscription,
+                endSubProcessing(actualStatusId,endType ,subscribedChef.getChefId(), allSubscription,
                         createdBy);
             });
         }
     }
 
-    private void endSubProcessing(Long actualStatusId, Long chefId, AllSubscription allSubscription, String createdBy) {
-        ChefSubEarning chefSubEarning = new ChefSubEarning();
+    private void endSubProcessing(long actualStatusId,String endType, long chefId, AllSubscription allSubscription, String createdBy) {
+    	
+    	try {
+    		SubscriptionCost subscriptionCost = subscriptionCostRepository.findBySubscriptionId(allSubscription.getSubscriptionId());
+    	
+    		ChefSubEarning chefSubEarning = calculateAndSetChefEarning(subscriptionCost);
 
-        chefSubEarning.setAllSubscription(allSubscription);
-        chefSubEarning.setChefId(chefId);
-        chefSubEarning.setCreatedBy(createdBy);
-        chefSubEarning.setCreatedDateTime(Timestamp.valueOf(LocalDateTime.now()));
-        chefSubEarning.setSyncDateTime(Timestamp.valueOf(LocalDateTime.now()));
+    		chefSubEarning.setAllSubscription(allSubscription);
+    		chefSubEarning.setChefId(chefId);
+    		chefSubEarning.setCreatedBy(createdBy);
+    		chefSubEarning.setCreatedDateTime(Timestamp.valueOf(LocalDateTime.now()));
+    		chefSubEarning.setSyncDateTime(Timestamp.valueOf(LocalDateTime.now()));
 
-        //todo: passing 1 for cancelled reason, fix as per requirement.
-        chefSubEarning.setOffsetReason(entityManager.getReference(OffsetReason.class, 1L));
-
-        calculateAndSetChefEarning(chefSubEarning);
+        	//todo: passing 1 for cancelled reason, fix as per requirement.
+        	if(endType.equalsIgnoreCase("organic")) {
+        		chefSubEarning.setOffsetReason(entityManager.getReference(OffsetReason.class, 5L));
+        	}else if(endType.equalsIgnoreCase("cancel")){
+        		chefSubEarning.setOffsetReason(entityManager.getReference(OffsetReason.class, 1L));
+        	}
 
         chefSubEarningRepository.save(chefSubEarning);
-
         subscriptionActualRepository.cancelSubscriptionActual(actualStatusId, chefId, Timestamp.valueOf(LocalDate.now()
                 .atStartOfDay()));
+        
+    	}catch(Exception ex) {
+    		ex.printStackTrace();
+    	}
     }
 
-    private void calculateAndSetChefEarning(ChefSubEarning chefSubEarning) {
+    private ChefSubEarning calculateAndSetChefEarning(SubscriptionCost subscriptionCost) {
         //todo: complete these calculations
-        chefSubEarning.setChefEarnings(100.0);
+    	ChefSubEarning chefSubEarning = new ChefSubEarning ();
+    	
+    	double chefEarning = subscriptionCost.getActualCost()*0.75;
+        chefSubEarning.setChefEarnings(chefEarning);
         chefSubEarning.setOffsetValue(10.0);
-        chefSubEarning.setTaxComponent1(0.0);
+        chefSubEarning.setTaxComponent1(subscriptionCost.getTaxesComponent1());
         chefSubEarning.setTaxComponent2(0.0);
+        return chefSubEarning;
     }
 
     /**
@@ -342,11 +361,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		try {
 			subscriptionPaymentRepository.updateSubscriptionPayment(postPaymentDto.getSubscriptionId(),postPaymentDto.getRazorOrderId(),postPaymentDto.getPaymentStatus());
 			allSubscriptionRepository.updateSubscriptionStatus(postPaymentDto.getSubscriptionId(),postPaymentDto.getSubscriptionStatus());
+			return success();
 		}catch(Exception ex) {
 			ex.printStackTrace();
-			throwError("Not a valid subscription Id");
+			return SubscriptionUtility.error("something went wrong, Please check stat");
 		}
-		return success();
+		
 	}
 
 
