@@ -135,7 +135,7 @@ public class SubscriptionStaticServiceImpl implements SubscriptionStaticService 
 				AllDishes ad=sm.getAllDishes();
 				//subMenuDto.setDishDetail(new DishDetailDTo(ad.getDishId(),ad.getDishName(),ad.getDescription(),ad.getDishImage(),dishTypeMap.get(ad.getDishType()),dishCategoryMap.get(ad.getDishCategory())));
 				
-				switch(ad.getDishType()) {
+				switch(sm.getMealTypeId()) {
 				case 1:
 					breakFastList.add(new DishDetailDTo(ad.getDishId(),ad.getDishName(),ad.getDescription(),ad.getDishImage(),dishCategoryMap.get(ad.getDishCategory())));
 					break;
@@ -147,11 +147,12 @@ public class SubscriptionStaticServiceImpl implements SubscriptionStaticService 
 					break;
 				}
 				
-				subMenuDtoMap.put(mealTypeMap.get(1), breakFastList);
-				subMenuDtoMap.put(mealTypeMap.get(2), lunchList);
-				subMenuDtoMap.put(mealTypeMap.get(3), dinnerList);
 				
 			}
+			subMenuDtoMap.put(mealTypeMap.get(1), breakFastList);
+			subMenuDtoMap.put(mealTypeMap.get(2), lunchList);
+			subMenuDtoMap.put(mealTypeMap.get(3), dinnerList);
+			
 		}catch(Exception ex) {
 			ex.printStackTrace();
 			return SubscriptionUtility.error();
@@ -210,9 +211,10 @@ public class SubscriptionStaticServiceImpl implements SubscriptionStaticService 
 	@Override
 	public JpResponseModel fetchSubscriptionByUser(long userId) {
 		String chefName = "";
+		long subscriptionStatusId = 2;
 		List<FetchSubsResponseDto> responseDtoList = new ArrayList<>();
 		try {
-		List<NewAllSubscription> subscriptionList = newAllSubscriptionRepository.findAllSubscription(userId);
+		List<NewAllSubscription> subscriptionList = newAllSubscriptionRepository.findAllSubscription(userId,subscriptionStatusId);
 		
 		for(NewAllSubscription nas:subscriptionList) {
 			Collection<NewSubscribedChef> subscribedChefs = newSubscribedChefRepository.findAllBySubscriptionId(nas.getSubscriptionId());

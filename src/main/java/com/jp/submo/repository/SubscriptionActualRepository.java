@@ -22,8 +22,9 @@ public interface SubscriptionActualRepository extends JpaRepository<Subscription
 			MealType mealType, Timestamp date, Long actualStatusId);
 
 	@Modifying
-	@Query("Update SubscriptionActual sa SET sa.actualStatusId=:statusId WHERE sa.actualStatusId=1L and sa.date > :today and sa.chefId=:chefId")
-	void cancelSubscriptionActual(@Param("statusId") Long statusId, @Param("chefId") Long chefId,
+	@Query("Update SubscriptionActual sa SET sa.actualStatusId=:statusId WHERE sa.subscription.subscriptionId=:subscriptionId and sa.date > :today and sa.chefId=:chefId")
+	void cancelSubscriptionActual(@Param("subscriptionId") long subcriptionId,@Param("statusId") Long statusId, @Param("chefId") Long chefId,
 			@Param("today") Timestamp today);
+	
 
 }

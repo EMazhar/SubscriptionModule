@@ -239,11 +239,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         allSubscription.setSubscriptionStatus(entityManager.getReference(SubscriptionStatus.class, endSubscriptionDto
                 .getSubscriptionStatusId()));
-		/*
-		 * allSubscription.setModifiedBy(modifiedBy);
-		 * allSubscription.setLastModifiedDateTime(Timestamp.valueOf(LocalDateTime.now()
-		 * ));
-		 */
 
         allSubscriptionRepository.saveAndFlush(allSubscription);
        // allSubscriptionRepository.updateSubscriptionStatus(allSubscription.getSubscriptionId(),endSubscriptionDto.getSubscriptionId());
@@ -311,28 +306,30 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private void endSubProcessing(long actualStatusId,String endType, long chefId, AllSubscription allSubscription, String createdBy) {
-    	
+    	ChefSubEarning chefSubEarning = null;
     	try {
     		SubscriptionCost subscriptionCost = subscriptionCostRepository.findBySubscriptionId(allSubscription.getSubscriptionId());
-    	
-    		ChefSubEarning chefSubEarning = calculateAndSetChefEarning(subscriptionCost);
-
-    		chefSubEarning.setAllSubscription(allSubscription);
-    		chefSubEarning.setChefId(chefId);
-    		chefSubEarning.setCreatedBy(createdBy);
-    		chefSubEarning.setCreatedDateTime(Timestamp.valueOf(LocalDateTime.now()));
-    		chefSubEarning.setSyncDateTime(Timestamp.valueOf(LocalDateTime.now()));
-
         	//todo: passing 1 for cancelled reason, fix as per requirement.
         	if(endType.equalsIgnoreCase("organic")) {
+        		
+        		chefSubEarning = calculateAndSetChefEarning(subscriptionCost);
         		chefSubEarning.setOffsetReason(entityManager.getReference(OffsetReason.class, 5L));
+        		
         	}else if(endType.equalsIgnoreCase("cancel")){
+        		chefSubEarning=new ChefSubEarning();
         		chefSubEarning.setOffsetReason(entityManager.getReference(OffsetReason.class, 1L));
+        		
         	}
-
-        chefSubEarningRepository.save(chefSubEarning);
-        subscriptionActualRepository.cancelSubscriptionActual(actualStatusId, chefId, Timestamp.valueOf(LocalDate.now()
-                .atStartOfDay()));
+        	if(chefSubEarning!=null) {
+        		chefSubEarning.setAllSubscription(allSubscription);
+        		chefSubEarning.setChefId(chefId);
+        		chefSubEarning.setCreatedBy(createdBy);
+        		chefSubEarning.setCreatedDateTime(Timestamp.valueOf(LocalDateTime.now()));
+        		chefSubEarning.setSyncDateTime(Timestamp.valueOf(LocalDateTime.now()));
+        	}
+        	subscriptionActualRepository.cancelSubscriptionActual(allSubscription.getSubscriptionId(),actualStatusId, chefId, Timestamp.valueOf(LocalDate.now()
+                    .atStartOfDay()));
+        	chefSubEarningRepository.save(chefSubEarning);
         
     	}catch(Exception ex) {
     		ex.printStackTrace();
