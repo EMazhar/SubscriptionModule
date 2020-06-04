@@ -65,6 +65,8 @@ public class SubscriptionStaticServiceImpl implements SubscriptionStaticService 
 		dishCategoryMap.put(2, "Main Course");
 		dishCategoryMap.put(3,"Accompaniments");
 		dishCategoryMap.put(4,"Dessert");
+		dishCategoryMap.put(5,"Breakfast Combo");
+		
 		dishTypeMap.put(1,"Vegetarian");
 		dishTypeMap.put(2,"Non-Vegetarian");
 		mealTypeMap.put(1, "Breakfast");
@@ -345,12 +347,30 @@ public class SubscriptionStaticServiceImpl implements SubscriptionStaticService 
 	}
 
 	@Override
-	public JpResponseModel getAllSubscriptionDetail() {
+	public JpResponseModel getAllSubscriptionDetail(String subscriptionType) {
+		long subscriptionId=2;
+		if(subscriptionType==null) {
+			subscriptionId=2;
+		}else {
+			if(subscriptionType.equalsIgnoreCase("all")) {
+				
+			}else if(subscriptionType.equalsIgnoreCase("confirm")) {
+				subscriptionId=2;
+			}else if(subscriptionType.equalsIgnoreCase("completed")) {
+				subscriptionId=4;
+			}else if(subscriptionType.equalsIgnoreCase("Inorganically Ended")) {
+				subscriptionId=5;
+			}else if(subscriptionType.equalsIgnoreCase("Chef Assigned")) {
+				subscriptionId=3;
+			}else if(subscriptionType.equalsIgnoreCase("Prepayment")) {
+				subscriptionId=1;
+			}
+		}
 		
 		List<SubscriptionDetailResponseDto> responseDtoList= new ArrayList<>();
 		try {
 			
-		List<NewAllSubscription> subscriptionList = newAllSubscriptionRepository.findAllBySubscritpStatus(2);
+		List<NewAllSubscription> subscriptionList = newAllSubscriptionRepository.findAllBySubscritpStatus(subscriptionId);
 		for(NewAllSubscription nas:subscriptionList) {
 			SubscriptionDetailResponseDto sdr = modelMapper.map(nas, SubscriptionDetailResponseDto.class);
 			sdr.setSubscriptionStatus(SubcriptionStatusMap.get((int)nas.getSubscriptionStatusId()));

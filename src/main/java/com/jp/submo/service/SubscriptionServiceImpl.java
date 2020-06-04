@@ -166,7 +166,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         allSubscription.setSubscriptionStatus(entityManager.getReference(SubscriptionStatus.class,3L));
         allSubscriptionRepository.saveAndFlush(allSubscription);
-
+        // add logic for sending notification
+        
         return success();
 
     }
@@ -243,7 +244,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         allSubscriptionRepository.saveAndFlush(allSubscription);
        // allSubscriptionRepository.updateSubscriptionStatus(allSubscription.getSubscriptionId(),endSubscriptionDto.getSubscriptionId());
 
-        //todo: send notification and emails
+        //todo: send notification and emails for cancelling subscription and organic completion of subscription
 
 
         return success();
@@ -268,7 +269,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         assignChefToSubscription(createdBy, reassignChefToSubscriptionDto
                 .getChefId(), startDate, allSubscription);
-
+        
+        // add logic for sending notification
         return success();
     }
 

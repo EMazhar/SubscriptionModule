@@ -44,7 +44,7 @@ public interface SubscriptionStaticService {
 	 * 
 	 * @return
 	 */
-	JpResponseModel getAllSubscriptionDetail();
+	JpResponseModel getAllSubscriptionDetail(String subscriptionStatus);
 	
 	/**
 	 * 

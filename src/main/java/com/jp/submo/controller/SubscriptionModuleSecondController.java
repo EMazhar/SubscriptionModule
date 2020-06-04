@@ -53,8 +53,9 @@ public class SubscriptionModuleSecondController {
 	}	
 	
 	@GetMapping("/allsubscription")
-    public ResponseEntity<JpResponseModel> fetchSubscription() {
-		return new ResponseEntity<>(subscriptionStaticService.getAllSubscriptionDetail(),HttpStatus.OK);
+	public ResponseEntity<JpResponseModel> fetchSubscription(/* @RequestBody String subscriptionType */) {
+		String subscriptionType = null;
+		return new ResponseEntity<>(subscriptionStaticService.getAllSubscriptionDetail(subscriptionType),HttpStatus.OK);
 		
 	}
 	
