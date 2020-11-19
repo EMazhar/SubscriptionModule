@@ -1,5 +1,7 @@
 package com.jp.submo.service;
 
+import com.jp.jpu.dto.NotificationContentDto;
+import com.jp.jpu.util.NotificationService;
 import com.jp.submo.consumer.SubscriptionModuleConsumer;
 import com.jp.submo.dto.AssignChefToSubscriptionDto;
 import com.jp.submo.dto.ConfirmSubscriptionDto;
@@ -79,6 +81,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     EntityManager entityManager;
     @Autowired
     private SubscriptionModuleConsumer subscriptionModuleConsumer;
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -144,7 +148,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscriptionPaymentRepository.saveAndFlush(payment);
 
         //todo: Add logic for sending notification message to admin
-
+        NotificationContentDto notificationDto=new NotificationContentDto();
+        notificationService.invokeNotification(notificationDto);
         return success();
     }
 
